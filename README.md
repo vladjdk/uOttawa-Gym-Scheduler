@@ -9,7 +9,7 @@ If you do not have any of the above, run the following script in your terminal/c
 
 ```
 pip install requests
-pip install b24
+pip install bs4
 pip install pandas
 ```
 
