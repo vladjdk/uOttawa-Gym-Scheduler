@@ -15,7 +15,7 @@ pip install pandas
 ```
 
 ## Usage
-In a terminal, navigate to the this directory and run the following:
+In a terminal, navigate to the cloned directory and run the following:
 ```
 python scheduler.py
 ```
