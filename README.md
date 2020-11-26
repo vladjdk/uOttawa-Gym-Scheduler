@@ -5,6 +5,7 @@ REQUIRES PYTHON 3
 - Pandas
 - BS4
 - Requests
+
 If you do not have any of the above, run the following script in your terminal/command prompt.
 
 ```
