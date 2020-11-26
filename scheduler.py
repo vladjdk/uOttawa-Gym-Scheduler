@@ -24,12 +24,7 @@ sCheck_cookie = s.cookies['SCheck']
 
 jar = s.cookies
 
-print(asps_cookie)
-print(sCheck_cookie)
 
-print(r.headers)
-
-print(s.cookies)
 
 
 
@@ -84,7 +79,7 @@ def refresh_data():
     df['links'] = links
     df['link_type'] = link_type
 
-    # df.to_csv("./uottawa_gym_info.csv")
+    df.to_csv("./uottawa_gym_info.csv")
 
 
 login_request = s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
@@ -102,7 +97,12 @@ def auto_request():
         baseline_link + list(df[df['barcode'] == barcode_to_reserve].to_dict().get('links').values())[0][3:])
     checkout_request = s.post(
         baseline_link + "MyBasket/MyBasketCheckout.asp?URLAddress=/geegeereg/MyBasket/MyBasketCheckout.asp&PayAuthorizeWait=Yes")
-
-
+    print(checkout_request.content)
+    checkout_again = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketCheckout.asp?ApplyPayment=true")
+    print(checkout_again.content)
+    waiver = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketProgramLiabilityWaiver.asp")
+    print(waiver.content)
+    final_checkout = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketCheckout.asp")
+    print(final_checkout.content)
 refresh_data()
 auto_request()
