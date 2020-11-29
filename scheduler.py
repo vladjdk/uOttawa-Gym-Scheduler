@@ -4,32 +4,15 @@ import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 
-barcode = input("Input your barcode: ")
-pin = input("Input your PIN: ")
-barcode_to_reserve = input("Input the BARCODE of the session you want to reserve: ")
-request_time_ms = int(input("Input how the MS between every request (recommended 5000): "))
-
-df = pd.DataFrame()
-
-# Create a session
-s = requests.Session()
-# Landing request
-r = s.get('https://geegeereg.uottawa.ca/geegeereg/Activities/ActivitiesDetails.asp?aid=316')
-
-baseline_link = "https://geegeereg.uottawa.ca/geegeereg/"
-
-# Get initial cookies
-asps_cookie = s.cookies['ASPSESSIONIDQCTTATCC']
-sCheck_cookie = s.cookies['SCheck']
-
-jar = s.cookies
 
 
 
 
 
 
-def refresh_data():
+
+
+def refresh_data(s, df):
     course_names = []
     available_slots = []
     codes = []
@@ -81,20 +64,15 @@ def refresh_data():
 
     df.to_csv("./uottawa_gym_info.csv")
 
-
-login_request = s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
-                       data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
-
-
-def auto_request():
+def auto_request(s, df, session_code, request_time, baseline_link):
     count = 0
-    while list(df[df['barcode'] == barcode_to_reserve].to_dict().get('links').values())[0] == 0:
+    while list(df[df['barcode'] == session_code].to_dict().get('links').values())[0] == 0:
         refresh_data()
-        time.sleep(request_time_ms * 0.001)
+        time.sleep(request_time * 0.001)
         count += 1
         print(count)
     add_to_cart_request = s.post(
-        baseline_link + list(df[df['barcode'] == barcode_to_reserve].to_dict().get('links').values())[0][3:])
+        baseline_link + list(df[df['barcode'] == session_code].to_dict().get('links').values())[0][3:])
     checkout_request = s.post(
         baseline_link + "MyBasket/MyBasketCheckout.asp?URLAddress=/geegeereg/MyBasket/MyBasketCheckout.asp&PayAuthorizeWait=Yes")
     print(checkout_request.content)
@@ -104,5 +82,25 @@ def auto_request():
     print(waiver.content)
     final_checkout = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketCheckout.asp")
     print(final_checkout.content)
-refresh_data()
-auto_request()
+
+
+def run(barcode, pin, session_code, request_time):
+    df = pd.DataFrame()
+
+    # Create a session
+    s = requests.Session()
+    # Landing request
+    r = s.get('https://geegeereg.uottawa.ca/geegeereg/Activities/ActivitiesDetails.asp?aid=316')
+
+    baseline_link = "https://geegeereg.uottawa.ca/geegeereg/"
+
+    login_request = s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
+                           data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
+
+    # Get initial cookies
+    asps_cookie = s.cookies['ASPSESSIONIDQCTTATCC']
+    sCheck_cookie = s.cookies['SCheck']
+
+
+    refresh_data(s, df)
+    auto_request(s, df, session_code, request_time, baseline_link)
