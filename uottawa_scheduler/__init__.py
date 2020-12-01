@@ -2,28 +2,19 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
-
-
-
-
-
-
-
-
+from pandas import DataFrame
+import sys
 
 def refresh_data(s, df):
     course_names = []
     available_slots = []
-    codes = []
     dates = []
     times = []
-    days = []
     barcodes = []
     links = []
     link_type = []
 
-    for i in range(6):  # fix magic number
+    for i in range(6):  # TODO: fix magic number, 6 represents the number of pages that the school usually puts up
         r4 = s.get(
             'https://geegeereg.uottawa.ca/geegeereg/Activities/ActivitiesDetails.asp?GetPagingData=true&aid=316&sEcho=4&iColumns=9&sColumns=&iDisplayStart=' + str(
                 (i * 10)) + '&iDisplayLength=10&ajax=true')
@@ -73,34 +64,34 @@ def auto_request(s, df, session_code, request_time, baseline_link):
         print(count)
     add_to_cart_request = s.post(
         baseline_link + list(df[df['barcode'] == session_code].to_dict().get('links').values())[0][3:])
-    checkout_request = s.post(
-        baseline_link + "MyBasket/MyBasketCheckout.asp?URLAddress=/geegeereg/MyBasket/MyBasketCheckout.asp&PayAuthorizeWait=Yes")
-    print(checkout_request.content)
-    checkout_again = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketCheckout.asp?ApplyPayment=true")
-    print(checkout_again.content)
-    waiver = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketProgramLiabilityWaiver.asp")
-    print(waiver.content)
-    final_checkout = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketCheckout.asp")
-    print(final_checkout.content)
+    checkout_request = s.post("{}/MyBasket/MyBasketCheckout.asp?URLAddress=/geegeereg/MyBasket/MyBasketCheckout.asp"
+                              "&PayAuthorizeWait=Yes".format(baseline_link))
+    checkout_again = s.post("{}/MyBasket/MyBasketCheckout.asp?ApplyPayment=true".format(baseline_link))
+    waiver = s.post("{}/MyBasket/MyBasketProgramLiabilityWaiver.asp".format(baseline_link))
+    final_checkout = s.post("{}/MyBasket/MyBasketCheckout.asp".format(baseline_link))
+    print("Successfully scheduled for {}.".format(session_code))
 
 
 def run(barcode, pin, session_code, request_time):
-    df = pd.DataFrame()
+    df = DataFrame()
+    baseline_link = "https://geegeereg.uottawa.ca/geegeereg"
 
     # Create a session
     s = requests.Session()
     # Landing request
-    r = s.get('https://geegeereg.uottawa.ca/geegeereg/Activities/ActivitiesDetails.asp?aid=316')
+    s.get('{}/Activities/ActivitiesDetails.asp?aid=316'.format(baseline_link))
 
-    baseline_link = "https://geegeereg.uottawa.ca/geegeereg/"
 
-    login_request = s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
+    # Login Request
+    s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
                            data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
-
-    # Get initial cookies
-    asps_cookie = s.cookies['ASPSESSIONIDQCTTATCC']
-    sCheck_cookie = s.cookies['SCheck']
-
 
     refresh_data(s, df)
     auto_request(s, df, session_code, request_time, baseline_link)
+
+def main(argv):
+    run(argv[1], argv[2], argv[3], argv[4])
+
+
+if __name__ == "__main__":
+    main(sys.argv)
