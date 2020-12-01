@@ -89,7 +89,7 @@ def run(barcode, pin, session_code, request_time):
                            data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
 
     updated_df = refresh_data(s, df)
-    updated_df.head()
+    print("df: {}".format(updated_df))
     auto_request(s, updated_df, session_code, request_time, baseline_link)
 
 def main(argv):
