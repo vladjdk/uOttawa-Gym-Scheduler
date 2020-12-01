@@ -54,6 +54,8 @@ def refresh_data(s, df):
     df['link_type'] = link_type
 
     df.to_csv("./uottawa_gym_info.csv")
+    return df
+
 
 def auto_request(s, df, session_code, request_time, baseline_link):
     count = 0
@@ -86,8 +88,8 @@ def run(barcode, pin, session_code, request_time):
     s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
                            data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
 
-    refresh_data(s, df)
-    auto_request(s, df, session_code, request_time, baseline_link)
+    updated_df = refresh_data(s, df)
+    auto_request(s, updated_df, session_code, request_time, baseline_link)
 
 def main(argv):
     run(argv[1], argv[2], argv[3], argv[4])
