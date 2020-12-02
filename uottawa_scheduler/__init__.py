@@ -60,6 +60,7 @@ def refresh_data(s, df):
 def auto_request(s, df, session_code, request_time, baseline_link):
     count = 0
     while list(df[df['barcode'] == session_code].to_dict().get('links').values())[0] == 0:
+        df = refresh_data(s,df)
         time.sleep(request_time * 0.001)
         count += 1
         print(count)
