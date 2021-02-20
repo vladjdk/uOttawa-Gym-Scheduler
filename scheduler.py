@@ -61,12 +61,12 @@ def auto_request(s, df, session_code, request_time, baseline_link):
     count = 0
     while list(df[df['barcode'] == session_code].to_dict().get('links').values())[0] == 0:
         df = refresh_data(s,df)
-        time.sleep(request_time * 0.001)
+        time.sleep(int(request_time) * 0.001)
         count += 1
         print(count)
     add_to_cart_request = s.post(
-        baseline_link + list(df[df['barcode'] == session_code].to_dict().get('links').values())[0][3:])
-    checkout_request = s.post("{}/MyBasket/MyBasketCheckout.asp?URLAddress=/geegeereg/MyBasket/MyBasketCheckout.asp"
+        baseline_link + list(df[df['barcode'] == session_code].to_dict().get('geegeereglinks').values())[0][3:])
+    checkout_request = s.post("{}/MyBasket/MyBasketCheckout.asp?URLAddress=//MyBasket/MyBasketCheckout.asp"
                               "&PayAuthorizeWait=Yes".format(baseline_link))
     checkout_again = s.post("{}/MyBasket/MyBasketCheckout.asp?ApplyPayment=true".format(baseline_link))
     waiver = s.post("{}/MyBasket/MyBasketProgramLiabilityWaiver.asp".format(baseline_link))
