@@ -65,7 +65,7 @@ def auto_request(s, df, session_code, request_time, baseline_link):
         count += 1
         print(count)
     add_to_cart_request = s.post(
-        baseline_link + list(df[df['barcode'] == session_code].to_dict().get('geegeereglinks').values())[0][3:])
+        baseline_link + list(df[df['barcode'] == session_code].to_dict().get('links').values())[0][3:])
     checkout_request = s.post("{}/MyBasket/MyBasketCheckout.asp?URLAddress=//MyBasket/MyBasketCheckout.asp"
                               "&PayAuthorizeWait=Yes".format(baseline_link))
     checkout_again = s.post("{}/MyBasket/MyBasketCheckout.asp?ApplyPayment=true".format(baseline_link))
@@ -75,18 +75,10 @@ def auto_request(s, df, session_code, request_time, baseline_link):
 
 
 def run(barcode, pin, session_code, request_time):
-    df = DataFrame()
     baseline_link = "https://geegeereg.uottawa.ca/geegeereg"
+    s = login(barcode, pin)
 
-    # Create a session
-    s = requests.Session()
-    # Landing request
-    s.get('{}/Activities/ActivitiesDetails.asp?aid=316'.format(baseline_link))
-
-
-    # Login Request
-    s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
-                           data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
+    df = DataFrame()
 
     updated_df = refresh_data(s, df)
     print("df: {}".format(updated_df))
@@ -95,6 +87,20 @@ def run(barcode, pin, session_code, request_time):
 def main(argv):
     run(argv[1], argv[2], argv[3], argv[4])
 
+
+def login(barcode, pin):
+    baseline_link = "https://geegeereg.uottawa.ca/geegeereg"
+
+    # Create a session
+    s = requests.Session()
+    # Landing request
+    s.get('{}/Activities/ActivitiesDetails.asp?aid=316'.format(baseline_link))
+
+    # Login Request
+    s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
+           data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
+
+    return s
 
 if __name__ == "__main__":
     main(sys.argv)
