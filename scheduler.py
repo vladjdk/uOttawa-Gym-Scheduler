@@ -2,45 +2,19 @@ import time
 
 import requests
 from bs4 import BeautifulSoup
-import pandas as pd
+from pandas import DataFrame
+import sys
 
-barcode = input("Input your barcode: ")
-pin = input("Input your PIN: ")
-barcode_to_reserve = input("Input the BARCODE of the session you want to reserve: ")
-request_time_ms = int(input("Input how the MS between every request (recommended 5000): "))
-
-df = pd.DataFrame()
-
-# Create a session
-s = requests.Session()
-# Landing request
-r = s.get('https://geegeereg.uottawa.ca/geegeereg/Activities/ActivitiesDetails.asp?aid=316')
-
-baseline_link = "https://geegeereg.uottawa.ca/geegeereg/"
-
-# Get initial cookies
-asps_cookie = s.cookies['ASPSESSIONIDQCTTATCC']
-sCheck_cookie = s.cookies['SCheck']
-
-jar = s.cookies
-
-
-
-
-
-
-def refresh_data():
+def refresh_data(s, df):
     course_names = []
     available_slots = []
-    codes = []
     dates = []
     times = []
-    days = []
     barcodes = []
     links = []
     link_type = []
 
-    for i in range(6):  # fix magic number
+    for i in range(6):  # TODO: fix magic number, 6 represents the number of pages that the school usually puts up
         r4 = s.get(
             'https://geegeereg.uottawa.ca/geegeereg/Activities/ActivitiesDetails.asp?GetPagingData=true&aid=316&sEcho=4&iColumns=9&sColumns=&iDisplayStart=' + str(
                 (i * 10)) + '&iDisplayLength=10&ajax=true')
@@ -80,29 +54,53 @@ def refresh_data():
     df['link_type'] = link_type
 
     df.to_csv("./uottawa_gym_info.csv")
+    return df
 
 
-login_request = s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
-                       data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
-
-
-def auto_request():
+def auto_request(s, df, session_code, request_time, baseline_link):
     count = 0
-    while list(df[df['barcode'] == barcode_to_reserve].to_dict().get('links').values())[0] == 0:
-        refresh_data()
-        time.sleep(request_time_ms * 0.001)
+    while list(df[df['barcode'] == session_code].to_dict().get('links').values())[0] == 0:
+        df = refresh_data(s,df)
+        time.sleep(int(request_time) * 0.001)
         count += 1
         print(count)
     add_to_cart_request = s.post(
-        baseline_link + list(df[df['barcode'] == barcode_to_reserve].to_dict().get('links').values())[0][3:])
-    checkout_request = s.post(
-        baseline_link + "MyBasket/MyBasketCheckout.asp?URLAddress=/geegeereg/MyBasket/MyBasketCheckout.asp&PayAuthorizeWait=Yes")
-    print(checkout_request.content)
-    checkout_again = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketCheckout.asp?ApplyPayment=true")
-    print(checkout_again.content)
-    waiver = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketProgramLiabilityWaiver.asp")
-    print(waiver.content)
-    final_checkout = s.post("https://geegeereg.uottawa.ca/geegeereg/MyBasket/MyBasketCheckout.asp")
-    print(final_checkout.content)
-refresh_data()
-auto_request()
+        baseline_link + list(df[df['barcode'] == session_code].to_dict().get('links').values())[0][3:])
+    checkout_request = s.post("{}/MyBasket/MyBasketCheckout.asp?URLAddress=//MyBasket/MyBasketCheckout.asp"
+                              "&PayAuthorizeWait=Yes".format(baseline_link))
+    checkout_again = s.post("{}/MyBasket/MyBasketCheckout.asp?ApplyPayment=true".format(baseline_link))
+    waiver = s.post("{}/MyBasket/MyBasketProgramLiabilityWaiver.asp".format(baseline_link))
+    final_checkout = s.post("{}/MyBasket/MyBasketCheckout.asp".format(baseline_link))
+    print("Successfully scheduled for {}.".format(session_code))
+
+
+def run(barcode, pin, session_code, request_time):
+    baseline_link = "https://geegeereg.uottawa.ca/geegeereg"
+    s = login(barcode, pin)
+
+    df = DataFrame()
+
+    updated_df = refresh_data(s, df)
+    print("df: {}".format(updated_df))
+    auto_request(s, updated_df, session_code, request_time, baseline_link)
+
+def main(argv):
+    run(argv[1], argv[2], argv[3], argv[4])
+
+
+def login(barcode, pin):
+    baseline_link = "https://geegeereg.uottawa.ca/geegeereg"
+
+    # Create a session
+    s = requests.Session()
+    # Landing request
+    s.get('{}/Activities/ActivitiesDetails.asp?aid=316'.format(baseline_link))
+
+    # Login Request
+    s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
+           data={'ClientBarcode': barcode, 'AccountPin': pin, 'Enter': 'Login', 'FullPage': 'false'})
+
+    return s
+
+if __name__ == "__main__":
+    main(sys.argv)
