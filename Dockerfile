@@ -1,5 +1,4 @@
 FROM python:3.7
-RUN apt-get install libatlas-base-dev
 RUN pip install pandas
 RUN pip install bs4
 RUN pip install requests
