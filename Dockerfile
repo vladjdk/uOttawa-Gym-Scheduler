@@ -1,5 +1,10 @@
 FROM python:3.8-slim
-RUN pip install numpy==1.20.1
+RUN apk add --no-cache --update \
+    python3 python3-dev gcc \
+    gfortran musl-dev
+RUN pip3 install --upgrade pip setuptools && \
+    pip3 install -r numpy
+
 RUN pip install pandas
 RUN pip install bs4
 RUN pip install requests
