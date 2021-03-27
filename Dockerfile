@@ -1,4 +1,5 @@
 FROM python:3.7
+RUN pip install --upgrade pip setuptools wheel
 RUN pip install numpy
 RUN pip install pandas
 RUN pip install bs4
