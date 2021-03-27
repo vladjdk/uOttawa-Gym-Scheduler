@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM gliderlabs/alpine
 RUN apk add --no-cache --update \
     python3 python3-dev gcc \
     gfortran musl-dev
