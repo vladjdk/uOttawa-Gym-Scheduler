@@ -10,4 +10,4 @@ RUN pip install bs4
 RUN pip install requests
 WORKDIR /usr/src/sched
 COPY . .
-CMD ["python3 runner.py $BARCODE $PIN $SESSION_CODE $REQUEST_TIME"]
+CMD ["python3","runner.py","$BARCODE","$PIN","$SESSION_CODE","$REQUEST_TIME"]
