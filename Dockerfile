@@ -8,6 +8,7 @@ RUN pip install numpy
 RUN pip install pandas
 RUN pip install bs4
 RUN pip install requests
+RUN pip install lxml
 WORKDIR /usr/src/sched
 COPY . .
 CMD ["python3","runner.py","$BARCODE","$PIN","$SESSION_CODE","$REQUEST_TIME"]
