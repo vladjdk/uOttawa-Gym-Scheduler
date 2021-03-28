@@ -63,7 +63,7 @@ def auto_request(s, df, session_code, request_time, baseline_link):
         df = refresh_data(s,df)
         time.sleep(int(request_time) * 0.001)
         count += 1
-        print(count)
+        print(count, flush=True)
     add_to_cart_request = s.post(
         baseline_link + list(df[df['barcode'] == session_code].to_dict().get('links').values())[0][3:])
     checkout_request = s.post("{}/MyBasket/MyBasketCheckout.asp?URLAddress=//MyBasket/MyBasketCheckout.asp"
@@ -71,7 +71,7 @@ def auto_request(s, df, session_code, request_time, baseline_link):
     checkout_again = s.post("{}/MyBasket/MyBasketCheckout.asp?ApplyPayment=true".format(baseline_link))
     waiver = s.post("{}/MyBasket/MyBasketProgramLiabilityWaiver.asp".format(baseline_link))
     final_checkout = s.post("{}/MyBasket/MyBasketCheckout.asp".format(baseline_link))
-    print("Successfully scheduled for {}.".format(session_code))
+    print("Successfully scheduled for {}.".format(session_code), flush=True)
 
 
 def run(barcode, pin, session_code, request_time):
@@ -81,7 +81,7 @@ def run(barcode, pin, session_code, request_time):
     df = DataFrame()
 
     updated_df = refresh_data(s, df)
-    print("df: {}".format(updated_df))
+    print("df: {}".format(updated_df), flush=True)
     auto_request(s, updated_df, session_code, request_time, baseline_link)
 
 def main(argv):
