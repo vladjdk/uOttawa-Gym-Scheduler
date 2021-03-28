@@ -1,8 +1,8 @@
 FROM python:3.7
-ENV BARCODE=none
-ENV PIN=none
-ENV SESSION_CODE=none
-ENV REQUEST_TIME=none
+ENV BARCODE 0
+ENV PIN 0
+ENV SESSION_CODE 0
+ENV REQUEST_TIME 0
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install numpy
 RUN pip install pandas

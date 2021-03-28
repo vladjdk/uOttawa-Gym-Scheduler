@@ -1,8 +1,10 @@
 import scheduler
 import sys
+import os
 
-def main(argv):
-    scheduler.run(argv[1], argv[2], argv[3], argv[4])
+def main():
+
+    scheduler.run(os.environ['BARCODE'], os.environ['PIN'], os.environ['SESSION_CODE'], os.environ['REQUEST_TIME'])
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
