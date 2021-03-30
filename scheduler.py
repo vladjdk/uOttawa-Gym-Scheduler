@@ -18,6 +18,7 @@ def refresh_data(s, df):
         r4 = s.get(
             'https://geegeereg.uottawa.ca/geegeereg/Activities/ActivitiesDetails.asp?GetPagingData=true&aid=316&sEcho=4&iColumns=9&sColumns=&iDisplayStart=' + str(
                 (i * 10)) + '&iDisplayLength=10&ajax=true')
+
         soup = BeautifulSoup(r4.text, 'lxml')
         for row in soup.find_all(headers="BasketLink"):
             try:
@@ -94,7 +95,12 @@ def login(barcode, pin):
     # Create a session
     s = requests.Session()
     # Landing request
-    s.get('{}/Activities/ActivitiesDetails.asp?aid=316'.format(baseline_link))
+    r = s.get('{}/Activities/ActivitiesDetails.asp?aid=316'.format(baseline_link)).content
+    while r == b"<BR><BR><strong>L'acc\xc3\xa8s au site est pr\xc3\xa9sentement indisponible. Si vous souhaitez vous inscrire \xc3\xa0 une activit\xc3\xa9, veuillez, s'il vous pla\xc3\xaet, r\xc3\xa9essayer apr\xc3\xa8s 3 h.\r\n<br><br>\r\nAccess to the site is currently unavailable. To register for activities, please try again after 3 am. </strong><BR><BR>Nous \xc3\xa9prouvons pr\xc3\xa9sentement des probl\xc3\xa8mes techniques avec le programme d'inscription en ligne. Nous faisons tout en notre pouvoir pour r\xc3\xa9gler la situation. Veuillez revenir plus tard aujourd'hui pour terminer votre inscription en ligne aux programmes intra-muros et aux activit\xc3\xa9s r\xc3\xa9cr\xc3\xa9atives.\r\n<br><br>":
+        time.sleep(10)
+        s = requests.Session()
+        r = s.get('{}/Activities/ActivitiesDetails.asp?aid=316'.format(baseline_link)).content
+        print("Page Issues: {}".format(r))
 
     # Login Request
     s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
