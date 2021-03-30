@@ -100,7 +100,7 @@ def login(barcode, pin):
         time.sleep(10)
         s = requests.Session()
         r = s.get('{}/Activities/ActivitiesDetails.asp?aid=316'.format(baseline_link)).content
-        print("Page Issues: {}".format(r), flush=True)
+        print("Page Issues", flush=True)
 
     # Login Request
     s.post("https://geegeereg.uottawa.ca/geegeereg/MyAccount/MyAccountUserLogin.asp",
