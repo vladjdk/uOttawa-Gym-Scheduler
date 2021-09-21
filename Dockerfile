@@ -5,6 +5,9 @@ ENV SESSION_CODE 0
 ENV REQUEST_TIME 0
 ENV TZ=America/Toronto
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+RUN apt-get -y install libc-dev
+RUN apt-get -y install build-essential
+RUN pip install -U pip
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install numpy
 RUN pip install pandas
