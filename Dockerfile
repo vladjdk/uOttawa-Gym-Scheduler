@@ -1,6 +1,5 @@
-FROM debian:stretch-slim
+FROM python:3.7-slim
 RUN apt-get update && apt-get -y dist-upgrade
-RUN apt-get -y install build-essential libssl-dev libffi-dev python3.5 libblas3 libc6 liblapack3 gcc python3-dev python3-pip cython3
 RUN apt-get -y install python3-numpy
 RUN apt-get -y install python3-pandas
 ENV BARCODE 0
