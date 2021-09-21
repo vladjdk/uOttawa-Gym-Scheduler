@@ -5,12 +5,12 @@ ENV SESSION_CODE 0
 ENV REQUEST_TIME 0
 ENV TZ=America/Toronto
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN pip3 install --upgrade pip setuptools wheel
-RUN pip3 install pandas
-RUN pip3 install bs4
-RUN pip3 install requests
-RUN pip3 install lxml
-RUN pip3 install numpy
+RUN pip install --upgrade pip setuptools wheel
+RUN pip install pandas
+RUN pip install bs4
+RUN pip install requests
+RUN pip install lxml
+RUN pip install numpy
 WORKDIR /usr/src/sched
 COPY . .
 CMD ["python3","runner.py","$REQUEST_TIME"]
