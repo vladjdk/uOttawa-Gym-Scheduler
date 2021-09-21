@@ -1,9 +1,12 @@
+import json
 import time
 
 import requests
 from bs4 import BeautifulSoup
 from pandas import DataFrame
 import sys
+from datetime import datetime, timedelta
+import pandas as pd
 
 def refresh_data(s, df):
     course_names = []
@@ -49,44 +52,93 @@ def refresh_data(s, df):
     df['course_names'] = course_names
     df['times'] = times
     df['dates'] = dates
+    df['weekdays'] = pd.to_datetime(df['dates']).dt.weekday
     df['available'] = available_slots
     df['barcode'] = barcodes
     df['links'] = links
     df['link_type'] = link_type
 
+
     df.to_csv("./uottawa_gym_info.csv")
     return df
 
 
-def auto_request(s, df, session_code, request_time, baseline_link):
+def auto_request(s, schedule, request_time, baseline_link):
+    df = DataFrame()
+    df = refresh_data(s, df)
+
+    days = ['monday', 'tuesday', 'wednesday', 'thursday', "friday", "saturday", "sunday"]
+    day = datetime.now().weekday()+2
+    filtered_df = df[df['weekdays'] == day]
+    filtered_df = filtered_df[filtered_df['times'].str.lower() == schedule[days[day]].lower()]
+    session_code = filtered_df['barcode'].iloc[0]
+
     count = 0
-    while list(df[df['barcode'] == session_code].to_dict().get('links').values())[0] == 0:
-        df = refresh_data(s,df)
-        time.sleep(int(request_time) * 0.001)
-        count += 1
-        print(count, flush=True)
-    add_to_cart_request = s.post(
-        baseline_link + list(df[df['barcode'] == session_code].to_dict().get('links').values())[0][2:])
-    checkout_request = s.post("{}/MyBasket/MyBasketCheckout.asp?URLAddress=//MyBasket/MyBasketCheckout.asp"
-                              "&PayAuthorizeWait=Yes".format(baseline_link))
-    checkout_again = s.post("{}/MyBasket/MyBasketCheckout.asp?ApplyPayment=true".format(baseline_link))
-    waiver = s.post("{}/MyBasket/MyBasketProgramLiabilityWaiver.asp".format(baseline_link))
-    final_checkout = s.post("{}/MyBasket/MyBasketCheckout.asp".format(baseline_link))
-    print("Successfully scheduled for {}.".format(session_code), flush=True)
+    today = datetime.today()
+    time_to_start = datetime(today.year, today.month, today.day, 20, 55)
+
+    has_time = False
+    for i in range(7):
+        if schedule[days[day]] != "":
+            has_time = True
+            break
+
+    if not has_time:
+        raise Exception("Make sure you have a time inputted into input.json")
 
 
-def run(barcode, pin, session_code, request_time):
+    while(True):
+
+        while schedule[days[time_to_start.weekday()]] == "":
+            time_to_start = time_to_start + timedelta(days=1)
+
+        if datetime.today() < time_to_start:
+            print("Sleeping {} seconds, until 5 mins before the opening time. Now we wait! Check back on {}/{}/{} at {}:{} to see progress.".format((time_to_start - today).seconds+(time_to_start-today).days*86400, time_to_start.year, time_to_start.month, time_to_start.day, time_to_start.hour, time_to_start.minute))
+            time.sleep((time_to_start-today).seconds+(time_to_start-today).days*86400)
+            time_to_start = time_to_start + timedelta(days=1)
+
+
+
+        while list(df[df['barcode'] == session_code].to_dict().get('links').values())[0] == 0:
+            df = refresh_data(s,df)
+
+            day = datetime.now().weekday() + 2
+            filtered_df = df[df['weekdays'] == day]
+            filtered_df = filtered_df[filtered_df['times'].str.lower() == schedule[days[day]].lower()]
+            session_code = filtered_df['barcode'].iloc[0]
+
+            time.sleep(int(request_time) * 0.001)
+            count += 1
+            print(count, flush=True)
+
+        if list(df[df['barcode'] == session_code].to_dict().get('link_type').values())[0] == "Waitlist":
+            time_to_start = datetime(time_to_start + timedelta(days=1))
+        else:
+            add_to_cart_request = s.post(
+                baseline_link + list(df[df['barcode'] == session_code].to_dict().get('links').values())[0][2:])
+            checkout_request = s.post("{}/MyBasket/MyBasketCheckout.asp?URLAddress=//MyBasket/MyBasketCheckout.asp"
+                                      "&PayAuthorizeWait=Yes".format(baseline_link))
+            checkout_again = s.post("{}/MyBasket/MyBasketCheckout.asp?ApplyPayment=true".format(baseline_link))
+            waiver = s.post("{}/MyBasket/MyBasketProgramLiabilityWaiver.asp".format(baseline_link))
+            final_checkout = s.post("{}/MyBasket/MyBasketCheckout.asp".format(baseline_link))
+            print("Successfully scheduled for {}.".format(session_code), flush=True)
+
+
+def run(request_time):
     baseline_link = "https://geegeereg.uottawa.ca/geegeereg"
-    s = login(barcode, pin)
+    j = json.loads(open("./input.json").read())
+    schedule = j['times']
+    s = login(j['login']['barcode'], j['login']['pin'])
+
 
     df = DataFrame()
 
     updated_df = refresh_data(s, df)
     print("df: {}".format(updated_df), flush=True)
-    auto_request(s, updated_df, session_code, request_time, baseline_link)
+    auto_request(s, schedule, request_time, baseline_link)
 
 def main(argv):
-    run(argv[1], argv[2], argv[3], argv[4])
+    run(argv[1])
 
 
 def login(barcode, pin):
