@@ -84,7 +84,7 @@ def auto_request(s, schedule, request_time, baseline_link):
             break
 
     if not has_time:
-        raise Exception("Make sure you have a time inputted into input.json")
+        raise Exception("Make sure you have a time inputted into info.json")
 
 
     while(True):
@@ -126,7 +126,7 @@ def auto_request(s, schedule, request_time, baseline_link):
 
 def run(request_time):
     baseline_link = "https://geegeereg.uottawa.ca/geegeereg"
-    j = json.loads(open("./input.json").read())
+    j = json.loads(open("info.json").read())
     schedule = j['times']
     s = login(j['login']['barcode'], j['login']['pin'])
 

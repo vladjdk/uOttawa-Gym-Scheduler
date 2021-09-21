@@ -105,8 +105,8 @@ celerybeat.pid
 .env
 .venv
 env/
-venv/
 ENV/
+venv
 env.bak/
 venv.bak/
 
@@ -130,6 +130,4 @@ dmypy.json
 .DS_STORE
 
 .idea/
-input.json
 
-*.json
