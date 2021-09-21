@@ -4,11 +4,11 @@ ENV PIN 0
 ENV SESSION_CODE 0
 ENV REQUEST_TIME 0
 RUN pip install --upgrade pip setuptools wheel
-RUN pip install --no-cache-dir --default-timeout=100 pandas
-RUN pip install --no-cache-dir --default-timeout=100 bs4
-RUN pip install --no-cache-dir --default-timeout=100 requests
-RUN pip install --no-cache-dir --default-timeout=100 lxml
-RUN pip install --no-cache-dir --default-timeout=100 numpy
+RUN pip install pandas
+RUN pip install bs4
+RUN pip install requests
+RUN pip install lxml
+RUN pip install numpy
 ENV TZ=America/Detroit
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /usr/src/sched
