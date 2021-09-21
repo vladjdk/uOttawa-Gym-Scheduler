@@ -24,3 +24,5 @@ The session code for every gym slot can be found here:
 
 # PSA
 Make sure you choose a future gym slot barcode that doesn't have a waitlist on it for this bot to work.
+
+//TODO: add info.json info and change up README
