@@ -95,6 +95,7 @@ def auto_request(s, schedule, request_time, baseline_link):
         if datetime.today() < time_to_start:
             print("Sleeping {} seconds, until 5 mins before the opening time. Now we wait! Check back on {}/{}/{} at {}:{} to see progress.".format((time_to_start - today).seconds+(time_to_start-today).days*86400, time_to_start.year, time_to_start.month, time_to_start.day, time_to_start.hour, time_to_start.minute))
             time.sleep((time_to_start-today).seconds+(time_to_start-today).days*86400)
+            s = login(json.loads(open("./info.json").read())["login"]["barcode"], json.loads(open("./info.json").read())["login"]["pin"])
             time_to_start = time_to_start + timedelta(days=1)
 
 
