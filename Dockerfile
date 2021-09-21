@@ -1,10 +1,8 @@
 FROM python:3.7-slim
-RUN apt-get update && apt-get -y dist-upgrade
-RUN apt-get -y install python3-numpy
-RUN apt-get -y install python3-pandas
-ENV BARCODE 0
-ENV PIN 0
-ENV SESSION_CODE 0
+
+RUN pip install --upgrade pip setuptools wheel
+RUN pip3 install numpy
+RUN pip3 install pandas
 ENV REQUEST_TIME 0
 RUN pip3 install bs4
 RUN pip3 install requests
