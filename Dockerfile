@@ -3,9 +3,8 @@ ENV BARCODE 0
 ENV PIN 0
 ENV SESSION_CODE 0
 ENV REQUEST_TIME 0
-ENV TZ=America/Toronto
+ENV TZ=America/Detroit
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-RUN dpkg-reconfigure --frontend noninteractive tzdata
 RUN pip install --upgrade pip setuptools wheel
 RUN pip install pandas
 RUN pip install bs4
