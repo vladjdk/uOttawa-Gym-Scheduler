@@ -4,7 +4,7 @@ COPY . .
 
 ENV REQUEST_TIME 0
 
-RUN apt-get update && \
+RUN apt-get update --fix-missing && \
     apt-get -y upgrade && \
     apt-get install -y
 RUN apt-get install -y python3-pandas
