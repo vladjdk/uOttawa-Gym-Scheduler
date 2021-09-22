@@ -1,21 +1,12 @@
 FROM python:3.9-buster
-WORKDIR /usr/src/app
 COPY . .
-
 ENV REQUEST_TIME 0
 
-RUN apt-get update --fix-missing && \
-    apt-get -y upgrade && \
-    apt-get install -y
-RUN apt-get install -y python3-scipy
-RUN apt-get install -y python3-pandas
-RUN apt-get install -y python3-numpy
-RUN pip3 install setuptools
-RUN pip3 install requests
-RUN pip3 install beautifulsoup4
-RUN pip3 install lxml
+RUN python3 -m venv /opt/venv
+RUN . /opt/venv/bin/activate && pip install -r requirements.txt
+
 ENV TZ=America/Detroit
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /usr/src/sched
 COPY . .
-CMD ["python3","runner.py","$REQUEST_TIME"]
+CMD ["/opt/venv/bin/python","runner.py","$REQUEST_TIME"]
