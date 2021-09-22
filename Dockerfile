@@ -1,10 +1,11 @@
-FROM python:3.7
+FROM python:3.7-buster
 WORKDIR /usr/src/app
 COPY . .
 
 ENV REQUEST_TIME 0
 
 RUN apt-get update && \
+    apt-get -y upgrade && \
     apt-get install -y \
     sudo
 RUN sudo apt-get install -y python3-pandas
