@@ -7,8 +7,8 @@ ENV REQUEST_TIME 0
 RUN apt-get update --fix-missing && \
     apt-get -y upgrade && \
     apt-get install -y
-RUN apt-get install -y python3-pandas
 RUN apt-get install -y python3-scipy
+RUN apt-get install -y python3-pandas
 RUN apt-get install -y python3-numpy
 RUN pip install -r requirements.txt
 
