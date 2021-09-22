@@ -7,6 +7,7 @@ ENV REQUEST_TIME 0
 RUN apt-get update --fix-missing && \
     apt-get -y upgrade && \
     apt-get install -y
+RUN set PIP_DEFAULT_TIMEOUT=1200
 RUN pip3 install scipy
 RUN pip3 install pandas
 RUN pi3p install numpy
