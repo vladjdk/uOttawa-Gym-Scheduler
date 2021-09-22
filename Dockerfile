@@ -1,18 +1,16 @@
-FROM python:3.7-slim
+FROM python:3.7
 WORKDIR /usr/src/app
 COPY . .
 
 ENV REQUEST_TIME 0
 
-RUN apt-get update  --fix-missing && \
+RUN apt-get update && \
+    apt-get -y upgrade && \
     apt-get install -y \
-        build-essential \
-        make \
-        gcc \
-    && pip install -r requirements.txt \
-    && apt-get remove -y --purge make gcc build-essential \
-    && apt-get autoremove -y \
-    && rm -rf /var/lib/apt/lists/*
+    sudo
+RUN sudo apt-get install -y python3-pandas
+RUN sudo apt-get install -y python3-numpy
+RUN pip install -r requirements.txt
 
 ENV TZ=America/Detroit
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
