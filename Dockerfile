@@ -10,8 +10,10 @@ RUN apt-get update --fix-missing && \
 RUN apt-get install -y python3-scipy
 RUN apt-get install -y python3-pandas
 RUN apt-get install -y python3-numpy
-RUN pip install -r requirements.txt
-
+RUN pip3 install setuptools
+RUN pip3 install requests
+RUN pip3 install beautifulsoup4
+RUN pip3 install lxml
 ENV TZ=America/Detroit
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /usr/src/sched
