@@ -1,7 +1,6 @@
-scipy
-pandas
-numpy
 setuptools
 requests
 beautifulsoup4
 lxml
+pandas
+numpy
