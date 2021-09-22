@@ -1,17 +1,19 @@
-FROM python:3.9-buster
-
+FROM python:3.7-buster
 WORKDIR /usr/src/app
 COPY . .
 
 ENV REQUEST_TIME 0
 
-RUN pip install scipy
-RUN pip install pandas
-RUN pip install numpy
-RUN pip install setuptools
-RUN pip install requests
-RUN pip install beautifulsoup4
-RUN pip install lxml
+RUN apt-get update --fix-missing && \
+    apt-get -y upgrade && \
+    apt-get install -y
+RUN apt-get install -y python3-scipy
+RUN apt-get install -y python3-pandas
+RUN apt-get install -y python3-numpy
+RUN pip3 install setuptools
+RUN pip3 install requests
+RUN pip3 install beautifulsoup4
+RUN pip3 install lxml
 ENV TZ=America/Detroit
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 WORKDIR /usr/src/sched
