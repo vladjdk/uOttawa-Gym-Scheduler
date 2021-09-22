@@ -7,9 +7,9 @@ ENV REQUEST_TIME 0
 RUN apt-get update --fix-missing && \
     apt-get -y upgrade && \
     apt-get install -y
-RUN apt-get install -y python3-scipy
-RUN apt-get install -y python3-pandas
-RUN apt-get install -y python3-numpy
+RUN pip3 install scipy
+RUN pip3 install pandas
+RUN pi3p install numpy
 RUN pip3 install setuptools
 RUN pip3 install requests
 RUN pip3 install beautifulsoup4
