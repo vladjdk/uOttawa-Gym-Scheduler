@@ -1,7 +1,9 @@
-FROM continuumio/miniconda3
-RUN conda create -n env python=3.6
-RUN echo "source activate env" > ~/.bashrc
-ENV PATH /opt/conda/envs/env/bin:$PATH
+FROM python:3.7-buster
+
+RUN curl "https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-armv7l.sh" -o "Miniconda.sh"
+RUN bash -y ./Miniconda.sh
+RUN conda config --add channels rpi
+RUN conda update conda
 
 WORKDIR /usr/src/app
 COPY . .
