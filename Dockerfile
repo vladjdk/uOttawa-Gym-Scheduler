@@ -6,10 +6,9 @@ ENV REQUEST_TIME 0
 
 RUN apt-get update && \
     apt-get -y upgrade && \
-    apt-get install -y \
-    sudo
-RUN sudo apt-get install -y python3-pandas
-RUN sudo apt-get install -y python3-numpy
+    apt-get install -y
+RUN apt-get install -y python3-pandas
+RUN apt-get install -y python3-numpy
 RUN pip install -r requirements.txt
 
 ENV TZ=America/Detroit
