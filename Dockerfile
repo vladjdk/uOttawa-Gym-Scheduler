@@ -5,7 +5,6 @@ COPY . .
 ENV REQUEST_TIME 0
 
 RUN apt-get update && \
-    apt-get -y upgrade && \
     apt-get install -y \
     sudo
 RUN sudo apt-get install -y python3-pandas
