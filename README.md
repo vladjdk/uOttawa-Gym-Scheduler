@@ -19,10 +19,4 @@ The Python stdout is flushed at every print statement, so to view the output, us
 
 ```docker logs scheduler```
 
-The session code for every gym slot can be found here:
-![alt text](https://github.com/photonized/uOttawa-Gym-Scheduler/blob/main/barcode.png "session code example")
-
-# PSA
-Make sure you choose a future gym slot barcode that doesn't have a waitlist on it for this bot to work.
-
 //TODO: add info.json info and change up README
