@@ -9,7 +9,7 @@ When you have installed docker, run the following command to set up your image u
 
 After the image has been built, run the command 
 
-```docker run --env BARCODE=your_barcode --env PIN=your_pin --env SESSION_CODE=desired_gym_slot_code --env REQUEST_TIME=time_between_requests_ms --name scheduler scheduler```
+```docker run --env REQUEST_TIME=time_between_requests_ms --name scheduler scheduler```
 
 For example, this might look like:
 
