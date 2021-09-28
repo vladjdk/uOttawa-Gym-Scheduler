@@ -13,7 +13,7 @@ After the image has been built, run the command
 
 For example, this might look like:
 
-```docker run --env BARCODE=1234567890 --env PIN=12345 --env SESSION_CODE=15403 --env REQUEST_TIME=10000 --name scheduler scheduler```
+```docker run --env REQUEST_TIME=10000 --name scheduler scheduler```
 
 The Python stdout is flushed at every print statement, so to view the output, use the command
 
